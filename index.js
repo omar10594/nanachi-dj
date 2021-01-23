@@ -5,6 +5,10 @@ const { Client, Collection } = require("discord.js");
 const { readdirSync } = require("fs");
 const { join } = require("path");
 const { TOKEN, PREFIX } = require("./util/EvobotUtil");
+const { RefreshableAuthProvider, StaticAuthProvider } = require('twitch-auth')
+const tmi = require('twitch-auth-tmi');
+const fs = require('fs');
+
 
 const client = new Client({ 
   disableMentions: "everyone",
@@ -53,6 +57,10 @@ client.on("message", async (message) => {
     client.commands.get(commandName) ||
     client.commands.find((cmd) => cmd.aliases && cmd.aliases.includes(commandName));
 
+  // if (command.name == 'song_request') {
+  //   return message.reply(`this command is only available from twitch chat`);
+  // }
+
   if (!command) return;
 
   if (!cooldowns.has(command.name)) {
@@ -78,9 +86,76 @@ client.on("message", async (message) => {
   setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
   try {
-    command.execute(message, args);
+    if (command.name == 'song_request') {
+      command.execute(args, client);
+    } else {
+      command.execute(message, args);
+    }
   } catch (error) {
     console.error(error);
     message.reply("There was an error executing that command.").catch(console.error);
+  }
+});
+
+const tokenData = require('./tokens.json');
+const clientId = tokenData.clientID;
+const clientSecret = tokenData.clientSecret;
+const authProvider = new RefreshableAuthProvider(
+  new StaticAuthProvider(clientId, tokenData.accessToken),
+  {
+    clientSecret,
+    refreshToken: tokenData.refreshToken,
+    expiry: tokenData.expiryTimestamp === null ? null : new Date(tokenData.expiryTimestamp),
+    onRefresh: async ({ accessToken, refreshToken, expiryDate }) => {
+      const newTokenData = {
+        accessToken,
+        refreshToken,
+        expiryTimestamp: expiryDate === null ? null : expiryDate.getTime(),
+        clientId,
+        clientSecret
+      };
+      fs.writeFile('./tokens.json', JSON.stringify(newTokenData, null, 4), function () {
+        console.log('tokens updated')
+      })
+    }
+  }
+);
+
+const twitch_client = new tmi.Client({
+  options: { debug: true, messagesLogLevel: 'info' },
+  connection: {
+    reconnect: true,
+    secure: true
+  },
+  authProvider: authProvider,
+  channels: ['is0sans']
+});
+twitch_client.connect().catch(console.error);
+twitch_client.on('message', (channel, tags, message, self) => {
+  if(self || !message.startsWith('!')) return;
+
+  const args = message.slice(1).split(' ');
+  const command = args.shift().toLowerCase();
+
+  // if (command === 'music') {
+  //   songRequestChannel.send(`!${args.join(' ')}`);
+  // }
+
+  if (command === 'sr') {
+    try {
+      const command = client.commands.get('song_request')
+      command.execute(args, client);
+    } catch (error) {
+      console.error(error);
+      twitch_client.action(channel, "There was an error executing the command in discord.");
+    }
+  }
+
+  if (command === 'ping') {
+    twitch_client.action(channel, `@${tags.username} pong!`);
+  }
+
+  if (command === 'disconnect') {
+    twitch_client.disconnect();
   }
 });
