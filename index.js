@@ -159,3 +159,23 @@ twitch_client.on('message', (channel, tags, message, self) => {
     twitch_client.disconnect();
   }
 });
+
+const express = require('express')
+const app = express()
+const port = 8080
+
+app.get('/', (req, res) => {
+  const healthcheck = {
+    uptime: process.uptime(),
+    message: 'OK',
+    timestamp: Date.now()
+  };
+  try {
+    res.send(healthcheck);
+  } catch (e) {
+    healthcheck.message = e;
+    res.status(503).send();
+  }
+});
+
+app.listen(port);
