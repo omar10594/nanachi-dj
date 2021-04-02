@@ -128,7 +128,7 @@ const twitch_client = new tmi.Client({
     secure: true
   },
   authProvider: authProvider,
-  channels: ['is0sans']
+  channels: ['is0sans', 'omar10594']
 });
 twitch_client.connect().catch(console.error);
 twitch_client.on('message', (channel, tags, message, self) => {
