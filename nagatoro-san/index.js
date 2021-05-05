@@ -46,25 +46,32 @@ const listener = new EventSubListener(apiClient, new NgrokAdapter(), 'thisShould
 //   }
 // }), 'thisShouldBeARandomlyGeneratedFixedString');
 
-async function listenChannelEvents(twitchUserId, discordUserId) {
+async function listenChannelEvents(twitchUserId, discordUserId, event, message) {
   const discord_user = await discord_client.users.fetch(discordUserId);
 
-  await listener.subscribeToStreamOnlineEvents(twitchUserId, e => {
-    console.log(`${e.broadcasterDisplayName} just went live!`);
-    discord_user.send(`El canal ${e.broadcasterDisplayName} ha empezado stream en https://twitch.tv/${e.broadcasterDisplayName}`)
-  });
-
-  await listener.subscribeToStreamOfflineEvents(twitchUserId, e => {
-    console.log(`${e.broadcasterDisplayName} just went offline`);
+  await listener[`subscribeTo${event}Events`](twitchUserId, e => {
+    discord_user.send(message(e));
   });
 }
 
+function channelStartedStreamMessage(e) {
+  `El canal ${e.broadcasterDisplayName} ha empezado stream en https://twitch.tv/${e.broadcasterDisplayName}`;
+}
+
+const user = await apiClient.helix.users.getUserByName('omar10594');
+
 await apiClient.helix.eventSub.deleteAllSubscriptions();
 
-await listenChannelEvents('142110121', '353337058271690755');
-await listenChannelEvents('227353789', '353337058271690755');
-await listenChannelEvents('462742579', '353337058271690755');
-await listenChannelEvents('511200875', '353337058271690755');
+await listenChannelEvents('142110121', '353337058271690755', 'StreamOnline', channelStartedStreamMessage);
+await listenChannelEvents('227353789', '353337058271690755', 'StreamOnline', channelStartedStreamMessage);
+await listenChannelEvents('462742579', '353337058271690755', 'StreamOnline', channelStartedStreamMessage);
+await listenChannelEvents('511200875', '353337058271690755', 'StreamOnline', channelStartedStreamMessage);
+await listenChannelEvents('450122015', '364170048677609475', 'StreamOnline', (e) => {
+  'Asi que haces stream senpai :smirk:'
+});
+await listenChannelEvents('167553789', '353337058271690755', 'ChannelUpdate', (e) => {
+  'Asi que haces actualizaste la informacion de tu stream senpai :smirk:'
+});
 
 await listener.listen();
 
