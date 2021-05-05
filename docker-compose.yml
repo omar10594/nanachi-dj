@@ -5,13 +5,13 @@ services:
     build: ./nanachi-dj
     command: yarn start
     environment:
-      - NANACHI_DJ_DISCORD_TOKEN
       - YOUTUBE_API_KEY
-      - NANACHI_DJ_DISCORD_PREFIX
       - MAX_PLAYLIST_SIZE
       - PRUNING
       - STAY_TIME
       - DEFAULT_VOLUME
+      - NANACHI_DJ_DISCORD_TOKEN
+      - NANACHI_DJ_DISCORD_PREFIX
       - NANACHI_DJ_TWITCH_CLIENT_ID
       - NANACHI_DJ_TWITCH_CLIENT_SECRET
     depends_on:

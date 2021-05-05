@@ -1,0 +1,36 @@
+{
+  "name": "nagatoro-san",
+  "version": "1",
+  "description": "Discord bot to notify about some channels",
+  "main": "index.js",
+  "author": "omar10594 <omar10594@hotmail.com>",
+  "private": false,
+  "homepage": "https://github.com/omar10594/nagatoro-san",
+  "repository": "github:omar10594/nagatoro-san",
+  "bugs": "https://github.com/omar10594/nagatoro-san/issues",
+  "type": "module",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "array-move": "^3.0.1",
+    "discord.js": "^12.5.1",
+    "erit-ytdl": "*",
+    "express": "^4.17.1",
+    "ffmpeg-static": "^4.2.3",
+    "lyrics-finder": "^21.0.5",
+    "simple-youtube-api": "^5.1.1",
+    "soundcloud-downloader": "^0.2.3",
+    "string-progressbar": "^1.0.1",
+    "tmi.js": "^1.7.1",
+    "twitch": "^4.5.5",
+    "twitch-auth": "^4.4.2",
+    "twitch-auth-tmi": "^4.4.2",
+    "twitch-eventsub": "^4.5.5",
+    "twitch-eventsub-ngrok": "^4.5.5",
+    "ytdl-core": "^4.4.3"
+  },
+  "scripts": {
+    "start": "node nagatoro-san/index.js"
+  }
+}
