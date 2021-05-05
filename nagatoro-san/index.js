@@ -70,7 +70,7 @@ await listenChannelEvents('450122015', '364170048677609475', 'StreamOnline', (e)
   return 'Asi que haces stream senpai :smirk:'
 });
 await listenChannelEvents('167553789', '353337058271690755', 'ChannelUpdate', (e) => {
-  return 'Asi que haces actualizaste la informacion de tu stream senpai :smirk:'
+  return 'Asi que actualizaste la informacion de tu stream senpai :smirk:'
 });
 
 await listener.listen();
