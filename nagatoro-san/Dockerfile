@@ -1,4 +1,4 @@
-FROM node:12.19-slim
+FROM node:15-slim
 
 ENV USER=evobot
 
@@ -15,10 +15,11 @@ RUN groupadd -r ${USER} && \
 USER ${USER}
 WORKDIR /home/evobot
 
-COPY package*.json ./
-RUN npm install
+COPY package.json ./
+COPY yarn.lock ./
+RUN yarn install
 VOLUME [ "/home/evobot" ]
 
 COPY . .
 
-ENTRYPOINT [ "node", "index.js" ]
+ENTRYPOINT [ "yarn", "start" ]

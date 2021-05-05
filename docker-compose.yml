@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  nanachi-dj:
+    build: ./nanachi-dj
+    command: yarn start
+    environment:
+      - NANACHI_DJ_DISCORD_TOKEN
+      - YOUTUBE_API_KEY
+      - NANACHI_DJ_DISCORD_PREFIX
+      - MAX_PLAYLIST_SIZE
+      - PRUNING
+      - STAY_TIME
+      - DEFAULT_VOLUME
+      - NANACHI_DJ_TWITCH_CLIENT_ID
+      - NANACHI_DJ_TWITCH_CLIENT_SECRET
+    depends_on:
+      - postgres
+
+  nagatoro-san:
+    build: ./nagatoro-san
+    command: yarn start
+    environment:
+      - NAGATORO_SAN_DISCORD_TOKEN
+      - NAGATORO_SAN_TWITCH_CLIENT_ID
+      - NAGATORO_SAN_TWITCH_CLIENT_SECRET
+    ports:
+      - 8181:8181
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:12-alpine
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    ports:
+      - 5432
+
+volumes:
+  postgres:
