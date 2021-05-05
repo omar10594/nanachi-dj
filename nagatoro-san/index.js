@@ -55,7 +55,7 @@ async function listenChannelEvents(twitchUserId, discordUserId, event, message) 
 }
 
 function channelStartedStreamMessage(e) {
-  `El canal ${e.broadcasterDisplayName} ha empezado stream en https://twitch.tv/${e.broadcasterDisplayName}`;
+  return `El canal ${e.broadcasterDisplayName} ha empezado stream en https://twitch.tv/${e.broadcasterDisplayName}`;
 }
 
 const user = await apiClient.helix.users.getUserByName('omar10594');
@@ -67,10 +67,10 @@ await listenChannelEvents('227353789', '353337058271690755', 'StreamOnline', cha
 await listenChannelEvents('462742579', '353337058271690755', 'StreamOnline', channelStartedStreamMessage);
 await listenChannelEvents('511200875', '353337058271690755', 'StreamOnline', channelStartedStreamMessage);
 await listenChannelEvents('450122015', '364170048677609475', 'StreamOnline', (e) => {
-  'Asi que haces stream senpai :smirk:'
+  return 'Asi que haces stream senpai :smirk:'
 });
 await listenChannelEvents('167553789', '353337058271690755', 'ChannelUpdate', (e) => {
-  'Asi que haces actualizaste la informacion de tu stream senpai :smirk:'
+  return 'Asi que haces actualizaste la informacion de tu stream senpai :smirk:'
 });
 
 await listener.listen();
