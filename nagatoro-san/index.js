@@ -47,11 +47,14 @@ const listener = new EventSubListener(apiClient, new NgrokAdapter(), 'thisShould
 // }), 'thisShouldBeARandomlyGeneratedFixedString');
 
 async function listenChannelEvents(twitchUserId, discordUserId, event, message) {
-  const discord_user = await discord_client.users.fetch(discordUserId);
+  const discordUser = await discord_client.users.fetch(discordUserId);
 
   await listener[`subscribeTo${event}Events`](twitchUserId, e => {
-    discord_user.send(message(e));
+    console.log(`Event ${event} for channel ${e.broadcasterDisplayName} was fired and the message "${message(e)}" was send to ${discordUser.name} discord user`)
+    discordUser.send(message(e));
   });
+
+  console.log(`Added ${event} event listener for channel ${twitchUserId} to notify user ${discordUserId}`);
 }
 
 function channelStartedStreamMessage(e) {
@@ -98,6 +101,24 @@ app.get('/', async (req, res) => {
     res.send(healthcheck);
   } catch (e) {
     healthcheck.message = e;
+    res.status(503).send();
+  }
+});
+
+app.get('/twitch-channels/:channelName', async (req, res) => {
+  const twitchUser = await apiClient.helix.users.getUserByName(req.params.channelName);
+  if (!twitchUser) {
+    return res.status(404).send();
+  }
+  const response = {
+    message: 'OK',
+    name: twitchUser.name,
+    id: twitchUser.id
+  };
+  try {
+    res.send(response);
+  } catch (e) {
+    response.message = e;
     res.status(503).send();
   }
 });
